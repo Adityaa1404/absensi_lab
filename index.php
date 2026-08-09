@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<body>
-    
 <?php
-echo 'hola';
-?>
+session_start();
 
-</body>
-</html>
+if (isset($_SESSION['user_id'])) {
+    header("Location: dashboard.php");
+} else {
+    header("Location: modules/auth/login.php");
+}
+exit();
