@@ -4,9 +4,36 @@ require_once '../../config/koneksi.php';
 
 $error = '';
 $success = '';
+$edit_kegiatan = null;
 
-// Handling Form Submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
+// Handling Flash Messages from Session
+if (isset($_SESSION['msg_success'])) {
+    $success = $_SESSION['msg_success'];
+    unset($_SESSION['msg_success']);
+}
+if (isset($_SESSION['msg_error'])) {
+    $error = $_SESSION['msg_error'];
+    unset($_SESSION['msg_error']);
+}
+
+// Handling Fetch Edit Item
+if (isset($_GET['edit'])) {
+    $id_edit = (int)$_GET['edit'];
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM kegiatan WHERE id_kegiatan = :id AND dosen_id = :dosen_id LIMIT 1");
+        $stmt->execute(['id' => $id_edit, 'dosen_id' => $_SESSION['user_id']]);
+        $edit_kegiatan = $stmt->fetch();
+        if (!$edit_kegiatan) {
+            $error = 'Kegiatan tidak ditemukan atau Anda tidak memiliki akses.';
+        }
+    } catch (PDOException $e) {
+        $error = 'Gagal memuat data edit: ' . $e->getMessage();
+    }
+}
+
+// Handling Form Submission (ADD & EDIT)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    $action          = $_POST['action'];
     $nama_kegiatan   = trim($_POST['nama_kegiatan'] ?? '');
     $periode_mulai   = trim($_POST['periode_mulai'] ?? '');
     $periode_selesai = trim($_POST['periode_selesai'] ?? '');
@@ -14,24 +41,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $insentif        = trim($_POST['insentif'] ?? 0);
     $status          = trim($_POST['status'] ?? 'open');
 
-    // Validasi sederhana
     if (empty($nama_kegiatan) || empty($periode_mulai) || empty($periode_selesai) || empty($deskripsi_tugas)) {
         $error = 'Semua kolom bertanda * wajib diisi!';
     } else {
-        try {
-            $stmt = $pdo->prepare("INSERT INTO kegiatan (dosen_id, nama_kegiatan, periode_mulai, periode_selesai, deskripsi_tugas, insentif, status) VALUES (:dosen_id, :nama_kegiatan, :periode_mulai, :periode_selesai, :deskripsi_tugas, :insentif, :status)");
-            $stmt->execute([
-                'dosen_id'        => $_SESSION['user_id'],
-                'nama_kegiatan'   => $nama_kegiatan,
-                'periode_mulai'   => $periode_mulai,
-                'periode_selesai' => $periode_selesai,
-                'deskripsi_tugas' => $deskripsi_tugas,
-                'insentif'        => $insentif,
-                'status'          => $status
-            ]);
-            $success = 'Kegiatan berhasil dipublikasikan!';
-        } catch (PDOException $e) {
-            $error = 'Gagal menyimpan kegiatan: ' . $e->getMessage();
+        if ($action === 'add') {
+            try {
+                $stmt = $pdo->prepare("INSERT INTO kegiatan (dosen_id, nama_kegiatan, periode_mulai, periode_selesai, deskripsi_tugas, insentif, status) VALUES (:dosen_id, :nama_kegiatan, :periode_mulai, :periode_selesai, :deskripsi_tugas, :insentif, :status)");
+                $stmt->execute([
+                    'dosen_id'        => $_SESSION['user_id'],
+                    'nama_kegiatan'   => $nama_kegiatan,
+                    'periode_mulai'   => $periode_mulai,
+                    'periode_selesai' => $periode_selesai,
+                    'deskripsi_tugas' => $deskripsi_tugas,
+                    'insentif'        => $insentif,
+                    'status'          => $status
+                ]);
+                $_SESSION['msg_success'] = 'Kegiatan berhasil dipublikasikan!';
+                header("Location: kegiatan_push.php");
+                exit();
+            } catch (PDOException $e) {
+                $error = 'Gagal menyimpan kegiatan: ' . $e->getMessage();
+            }
+        } elseif ($action === 'edit') {
+            $id_kegiatan = (int)($_POST['id_kegiatan'] ?? 0);
+            try {
+                $stmt = $pdo->prepare("UPDATE kegiatan SET nama_kegiatan = :nama_kegiatan, periode_mulai = :periode_mulai, periode_selesai = :periode_selesai, deskripsi_tugas = :deskripsi_tugas, insentif = :insentif, status = :status WHERE id_kegiatan = :id AND dosen_id = :dosen_id");
+                $stmt->execute([
+                    'nama_kegiatan'   => $nama_kegiatan,
+                    'periode_mulai'   => $periode_mulai,
+                    'periode_selesai' => $periode_selesai,
+                    'deskripsi_tugas' => $deskripsi_tugas,
+                    'insentif'        => $insentif,
+                    'status'          => $status,
+                    'id'              => $id_kegiatan,
+                    'dosen_id'        => $_SESSION['user_id']
+                ]);
+                $_SESSION['msg_success'] = 'Kegiatan berhasil diperbarui!';
+                header("Location: kegiatan_push.php");
+                exit();
+            } catch (PDOException $e) {
+                $error = 'Gagal memperbarui kegiatan: ' . $e->getMessage();
+            }
         }
     }
 }
@@ -42,7 +92,9 @@ if (isset($_GET['delete'])) {
     try {
         $stmt = $pdo->prepare("DELETE FROM kegiatan WHERE id_kegiatan = :id AND dosen_id = :dosen_id");
         $stmt->execute(['id' => $id_kegiatan, 'dosen_id' => $_SESSION['user_id']]);
-        $success = 'Kegiatan berhasil dihapus!';
+        $_SESSION['msg_success'] = 'Kegiatan berhasil dihapus!';
+        header("Location: kegiatan_push.php");
+        exit();
     } catch (PDOException $e) {
         $error = 'Gagal menghapus kegiatan: ' . $e->getMessage();
     }
@@ -63,7 +115,7 @@ try {
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 p-6 sm:p-8 md:p-10 rounded-lg shadow-sm">
         <div>
             <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Push Lowongan Kegiatan</h2>
-            <p class="text-sm sm:text-base md:text-xl text-gray-500 mt-2">Publikasikan tugas atau kegiatan baru untuk Asisten Laboratorium</p>
+            <p class="text-sm sm:text-base md:text-xl text-gray-500 mt-2">Publikasikan atau perbarui tugas/kegiatan baru untuk Asisten Laboratorium</p>
         </div>
     </div>
 
@@ -86,21 +138,25 @@ try {
         </div>
     <?php endif; ?>
 
-    <!-- Form Push Kegiatan -->
+    <!-- Form Push / Edit Kegiatan -->
     <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
         <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-            <span class="w-3.5 h-3.5 rounded-full bg-[#1867c0]"></span>
-            Form Kegiatan Baru
+            <span class="w-3.5 h-3.5 rounded-full <?= $edit_kegiatan ? 'bg-amber-500' : 'bg-[#1867c0]' ?>"></span>
+            <?= $edit_kegiatan ? 'Edit Kegiatan: ' . htmlspecialchars($edit_kegiatan['nama_kegiatan']) : 'Form Kegiatan Baru' ?>
         </h3>
 
         <form method="POST" action="" class="space-y-8">
-            <input type="hidden" name="action" value="add">
+            <input type="hidden" name="action" value="<?= $edit_kegiatan ? 'edit' : 'add' ?>">
+            <?php if ($edit_kegiatan): ?>
+                <input type="hidden" name="id_kegiatan" value="<?= $edit_kegiatan['id_kegiatan'] ?>">
+            <?php endif; ?>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Nama Kegiatan -->
                 <div class="md:col-span-2">
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Nama Kegiatan *</label>
                     <input type="text" name="nama_kegiatan" required
+                           value="<?= htmlspecialchars($edit_kegiatan['nama_kegiatan'] ?? $_POST['nama_kegiatan'] ?? '') ?>"
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                            placeholder="Contoh: Pendampingan Praktikum Pemrograman Web">
                 </div>
@@ -109,6 +165,7 @@ try {
                 <div>
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Periode Mulai *</label>
                     <input type="date" name="periode_mulai" required
+                           value="<?= htmlspecialchars($edit_kegiatan['periode_mulai'] ?? $_POST['periode_mulai'] ?? '') ?>"
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
@@ -116,6 +173,7 @@ try {
                 <div>
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Periode Selesai *</label>
                     <input type="date" name="periode_selesai" required
+                           value="<?= htmlspecialchars($edit_kegiatan['periode_selesai'] ?? $_POST['periode_selesai'] ?? '') ?>"
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
@@ -123,15 +181,17 @@ try {
                 <div>
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Insentif / Honor (Rp)</label>
                     <input type="number" name="insentif" min="0" placeholder="0"
+                           value="<?= htmlspecialchars($edit_kegiatan['insentif'] ?? $_POST['insentif'] ?? '') ?>"
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
                 <!-- Status -->
                 <div>
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Status Kegiatan</label>
+                    <?php $selected_status = $edit_kegiatan['status'] ?? $_POST['status'] ?? 'open'; ?>
                     <select name="status" class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
-                        <option value="open">Open (Membuka Pendaftaran)</option>
-                        <option value="closed">Closed (Tutup)</option>
+                        <option value="open" <?= $selected_status === 'open' ? 'selected' : '' ?>>Open (Membuka Pendaftaran)</option>
+                        <option value="closed" <?= $selected_status === 'closed' ? 'selected' : '' ?>>Closed (Tutup)</option>
                     </select>
                 </div>
 
@@ -140,16 +200,21 @@ try {
                     <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Deskripsi Tugas *</label>
                     <textarea name="deskripsi_tugas" rows="4" required
                               class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
-                              placeholder="Jelaskan detail tugas, persyaratannya, dan tanggung jawab asdos..."></textarea>
+                              placeholder="Jelaskan detail tugas, persyaratannya, dan tanggung jawab asdos..."><?= htmlspecialchars($edit_kegiatan['deskripsi_tugas'] ?? $_POST['deskripsi_tugas'] ?? '') ?></textarea>
                 </div>
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex items-center justify-end gap-4">
+                <?php if ($edit_kegiatan): ?>
+                    <a href="kegiatan_push.php" class="px-6 py-3.5 md:py-4 rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 text-base sm:text-lg md:text-xl font-medium transition duration-200">
+                        Batal Edit
+                    </a>
+                <?php endif; ?>
                 <button type="submit" class="bg-[#1867c0] hover:bg-[#1355a1] text-white font-medium py-3.5 px-8 sm:py-4 sm:px-10 rounded-md text-base sm:text-lg md:text-xl transition duration-200 flex items-center gap-3">
                     <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    <span>Publish Kegiatan</span>
+                    <span><?= $edit_kegiatan ? 'Simpan Perubahan' : 'Publish Kegiatan' ?></span>
                 </button>
             </div>
         </form>
@@ -194,11 +259,17 @@ try {
                                     </span>
                                 </td>
                                 <td class="p-5 text-center whitespace-nowrap">
-                                    <a href="?delete=<?= $row['id_kegiatan'] ?>" 
-                                       onclick="return confirm('Yakin ingin menghapus kegiatan ini?')" 
-                                       class="px-4 py-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100 text-sm sm:text-base md:text-lg font-medium border border-red-200 transition">
-                                        Hapus
-                                    </a>
+                                    <div class="flex items-center justify-center gap-3">
+                                        <a href="?edit=<?= $row['id_kegiatan'] ?>" 
+                                           class="px-4 py-2 rounded-md bg-amber-50 text-amber-600 hover:bg-amber-100 text-sm sm:text-base md:text-lg font-medium border border-amber-200 transition">
+                                            Edit
+                                        </a>
+                                        <a href="?delete=<?= $row['id_kegiatan'] ?>" 
+                                           onclick="return confirm('Yakin ingin menghapus kegiatan ini?')" 
+                                           class="px-4 py-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100 text-sm sm:text-base md:text-lg font-medium border border-red-200 transition">
+                                            Hapus
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
