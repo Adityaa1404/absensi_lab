@@ -1,7 +1,7 @@
     </main>
 
-    <footer class="bg-slate-900 border-t border-slate-800/80 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+    <footer class="bg-white border-t border-gray-200 py-6 md:py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm md:text-lg text-gray-500 font-medium">
             &copy; <?= date('Y') ?> Lab Assistant Management System. All rights reserved.
         </div>
     </footer>

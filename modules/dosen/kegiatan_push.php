@@ -58,19 +58,19 @@ try {
 }
 ?>
 
-<div class="space-y-8">
+<div class="space-y-8 md:space-y-12">
     <!-- Header Page -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-xl">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 p-6 sm:p-8 md:p-10 rounded-lg shadow-sm">
         <div>
-            <h2 class="text-xl font-bold text-white tracking-tight">Push Lowongan Kegiatan</h2>
-            <p class="text-xs text-slate-400 mt-1">Publikasikan tugas atau kegiatan baru untuk Asisten Laboratorium</p>
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Push Lowongan Kegiatan</h2>
+            <p class="text-sm sm:text-base md:text-xl text-gray-500 mt-2">Publikasikan tugas atau kegiatan baru untuk Asisten Laboratorium</p>
         </div>
     </div>
 
     <!-- Alert Notifications -->
     <?php if (!empty($error)): ?>
-        <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-5 md:p-6 rounded-lg bg-red-50 border border-red-200 text-red-600 text-base sm:text-lg md:text-xl flex items-start gap-4">
+            <svg class="w-6 h-6 md:w-8 md:h-8 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <span><?= htmlspecialchars($error) ?></span>
@@ -78,8 +78,8 @@ try {
     <?php endif; ?>
 
     <?php if (!empty($success)): ?>
-        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-start gap-3">
-            <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-5 md:p-6 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-base sm:text-lg md:text-xl flex items-start gap-4">
+            <svg class="w-6 h-6 md:w-8 md:h-8 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
             <span><?= htmlspecialchars($success) ?></span>
@@ -87,49 +87,49 @@ try {
     <?php endif; ?>
 
     <!-- Form Push Kegiatan -->
-    <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl">
-        <h3 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
+        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+            <span class="w-3.5 h-3.5 rounded-full bg-[#1867c0]"></span>
             Form Kegiatan Baru
         </h3>
 
-        <form method="POST" action="" class="space-y-6">
+        <form method="POST" action="" class="space-y-8">
             <input type="hidden" name="action" value="add">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Nama Kegiatan -->
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Nama Kegiatan *</label>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Nama Kegiatan *</label>
                     <input type="text" name="nama_kegiatan" required
-                           class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
+                           class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                            placeholder="Contoh: Pendampingan Praktikum Pemrograman Web">
                 </div>
 
                 <!-- Periode Mulai -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Periode Mulai *</label>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Periode Mulai *</label>
                     <input type="date" name="periode_mulai" required
-                           class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200">
+                           class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
                 <!-- Periode Selesai -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Periode Selesai *</label>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Periode Selesai *</label>
                     <input type="date" name="periode_selesai" required
-                           class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200">
+                           class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
                 <!-- Insentif -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Insentif / Honor (Rp)</label>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Insentif / Honor (Rp)</label>
                     <input type="number" name="insentif" min="0" placeholder="0"
-                           class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200">
+                           class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
                 <!-- Status -->
                 <div>
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Status Kegiatan</label>
-                    <select name="status" class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200">
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Status Kegiatan</label>
+                    <select name="status" class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                         <option value="open">Open (Membuka Pendaftaran)</option>
                         <option value="closed">Closed (Tutup)</option>
                     </select>
@@ -137,16 +137,16 @@ try {
 
                 <!-- Deskripsi Tugas -->
                 <div class="md:col-span-2">
-                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Deskripsi Tugas *</label>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Deskripsi Tugas *</label>
                     <textarea name="deskripsi_tugas" rows="4" required
-                              class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
+                              class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                               placeholder="Jelaskan detail tugas, persyaratannya, dan tanggung jawab asdos..."></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg shadow-indigo-600/25 transition duration-200 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="submit" class="bg-[#1867c0] hover:bg-[#1355a1] text-white font-medium py-3.5 px-8 sm:py-4 sm:px-10 rounded-md text-base sm:text-lg md:text-xl transition duration-200 flex items-center gap-3">
+                    <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>Publish Kegiatan</span>
@@ -156,47 +156,47 @@ try {
     </div>
 
     <!-- Daftar Kegiatan Yang Pernah Dipublish -->
-    <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl">
-        <h3 class="text-lg font-semibold text-white mb-6">Daftar Kegiatan Dipublikasikan</h3>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
+        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-8">Daftar Kegiatan Dipublikasikan</h3>
 
         <?php if (empty($kegiatan_list)): ?>
-            <div class="p-8 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
+            <div class="p-10 text-center text-gray-500 border border-dashed border-gray-300 rounded-lg text-base sm:text-lg md:text-xl">
                 Belum ada kegiatan yang Anda publikasikan.
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="bg-slate-950 text-xs font-semibold uppercase tracking-wider text-slate-400 border-b border-slate-800">
+                <table class="w-full text-left text-base sm:text-lg md:text-xl text-gray-700 border-collapse">
+                    <thead class="bg-gray-50 text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 border-b border-gray-200">
                         <tr>
-                            <th class="p-4">Nama Kegiatan</th>
-                            <th class="p-4">Periode</th>
-                            <th class="p-4">Insentif</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4 text-center">Aksi</th>
+                            <th class="p-5">Nama Kegiatan</th>
+                            <th class="p-5">Periode</th>
+                            <th class="p-5">Insentif</th>
+                            <th class="p-5">Status</th>
+                            <th class="p-5 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-800/60">
+                    <tbody class="divide-y divide-gray-200">
                         <?php foreach ($kegiatan_list as $row): ?>
-                            <tr class="hover:bg-slate-800/30 transition">
-                                <td class="p-4 font-medium text-white">
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-5 font-bold text-gray-800">
                                     <?= htmlspecialchars($row['nama_kegiatan']) ?>
-                                    <p class="text-xs text-slate-400 truncate max-w-xs mt-0.5"><?= htmlspecialchars($row['deskripsi_tugas']) ?></p>
+                                    <p class="text-sm sm:text-base text-gray-500 font-normal truncate max-w-xs mt-1"><?= htmlspecialchars($row['deskripsi_tugas']) ?></p>
                                 </td>
-                                <td class="p-4 whitespace-nowrap text-xs text-slate-400">
+                                <td class="p-5 whitespace-nowrap text-sm sm:text-base md:text-lg text-gray-500">
                                     <?= date('d M Y', strtotime($row['periode_mulai'])) ?> - <?= date('d M Y', strtotime($row['periode_selesai'])) ?>
                                 </td>
-                                <td class="p-4 whitespace-nowrap font-mono text-xs text-indigo-400">
+                                <td class="p-5 whitespace-nowrap font-mono text-base sm:text-lg md:text-xl text-[#1867c0] font-semibold">
                                     Rp <?= is_numeric($row['insentif']) ? number_format($row['insentif'], 0, ',', '.') : htmlspecialchars($row['insentif']) ?>
                                 </td>
-                                <td class="p-4 whitespace-nowrap">
-                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider <?= $row['status'] === 'open' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-700/40 text-slate-400' ?>">
+                                <td class="p-5 whitespace-nowrap">
+                                    <span class="px-4 py-1.5 rounded-full text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider border <?= $row['status'] === 'open' ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-gray-100 text-gray-600 border-gray-200' ?>">
                                         <?= htmlspecialchars($row['status']) ?>
                                     </span>
                                 </td>
-                                <td class="p-4 text-center whitespace-nowrap">
+                                <td class="p-5 text-center whitespace-nowrap">
                                     <a href="?delete=<?= $row['id_kegiatan'] ?>" 
                                        onclick="return confirm('Yakin ingin menghapus kegiatan ini?')" 
-                                       class="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs font-medium border border-red-500/20 transition">
+                                       class="px-4 py-2 rounded-md bg-red-50 text-red-600 hover:bg-red-100 text-sm sm:text-base md:text-lg font-medium border border-red-200 transition">
                                         Hapus
                                     </a>
                                 </td>

@@ -82,17 +82,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 ?>
 
-<div class="max-w-4xl mx-auto space-y-8">
+<div class="max-w-4xl mx-auto space-y-8 md:space-y-12">
     <!-- Header Page -->
-    <div class="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl backdrop-blur-xl">
-        <h2 class="text-xl font-bold text-white tracking-tight">Kelola Profil Dosen</h2>
-        <p class="text-xs text-slate-400 mt-1">Perbarui informasi data diri atau kelola keberadaan akun Anda</p>
+    <div class="bg-white border border-gray-200 p-6 sm:p-8 md:p-10 rounded-lg shadow-sm">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Kelola Profil Dosen</h2>
+        <p class="text-sm sm:text-base md:text-xl text-gray-500 mt-2">Perbarui informasi data diri atau kelola keberadaan akun Anda</p>
     </div>
 
     <!-- Alert Notifications -->
     <?php if (!empty($error)): ?>
-        <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-5 md:p-6 rounded-lg bg-red-50 border border-red-200 text-red-600 text-base sm:text-lg md:text-xl flex items-start gap-4">
+            <svg class="w-6 h-6 md:w-8 md:h-8 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <span><?= htmlspecialchars($error) ?></span>
@@ -100,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <?php endif; ?>
 
     <?php if (!empty($success)): ?>
-        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-start gap-3">
-            <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="p-5 md:p-6 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-600 text-base sm:text-lg md:text-xl flex items-start gap-4">
+            <svg class="w-6 h-6 md:w-8 md:h-8 text-emerald-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
             <span><?= htmlspecialchars($success) ?></span>
@@ -109,52 +109,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <?php endif; ?>
 
     <!-- Overview Card (READ) -->
-    <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl flex flex-col sm:flex-row items-center gap-6">
-        <div class="w-20 h-20 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 text-2xl font-bold shrink-0">
+    <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm flex flex-col sm:flex-row items-center gap-8">
+        <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-lg bg-blue-50 border-2 border-[#1867c0] flex items-center justify-center text-[#1867c0] text-3xl sm:text-5xl font-bold shrink-0">
             <?= strtoupper(substr($user['nama'] ?? 'D', 0, 2)) ?>
         </div>
         <div class="text-center sm:text-left flex-1">
-            <h3 class="text-xl font-bold text-white"><?= htmlspecialchars($user['nama'] ?? 'Dosen') ?></h3>
-            <p class="text-sm text-indigo-400 font-mono mt-0.5">NIDN: <?= htmlspecialchars($user['username'] ?? '-') ?></p>
-            <span class="inline-block mt-2 px-3 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[11px] font-semibold uppercase tracking-wider">
+            <h3 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800"><?= htmlspecialchars($user['nama'] ?? 'Dosen') ?></h3>
+            <p class="text-base sm:text-lg md:text-xl text-[#1867c0] font-mono mt-1">NIDN: <?= htmlspecialchars($user['username'] ?? '-') ?></p>
+            <span class="inline-block mt-3 px-4 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200 text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider">
                 Role: <?= htmlspecialchars($user['role'] ?? 'dosen') ?>
             </span>
         </div>
     </div>
 
     <!-- Edit Profile Form (EDIT) -->
-    <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-xl">
-        <h3 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+    <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
+        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+            <span class="w-3.5 h-3.5 rounded-full bg-[#1867c0]"></span>
             Edit Data Profil
         </h3>
 
-        <form method="POST" action="" class="space-y-6">
+        <form method="POST" action="" class="space-y-8">
             <input type="hidden" name="action" value="update_profile">
 
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Nama Lengkap</label>
+                <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Nama Lengkap</label>
                 <input type="text" name="nama" value="<?= htmlspecialchars($user['nama'] ?? '') ?>" required
-                       class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
+                       class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                        placeholder="Masukkan Nama Lengkap beserta Gelar">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">NIDN / Nomor Induk Dosen</label>
+                <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">NIDN / Nomor Induk Dosen</label>
                 <input type="text" name="username" value="<?= htmlspecialchars($user['username'] ?? '') ?>" required
-                       class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
+                       class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                        placeholder="Masukkan NIDN">
             </div>
 
             <div>
-                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Password Baru (Opsional)</label>
+                <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Password Baru (Opsional)</label>
                 <input type="password" name="password"
-                       class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
+                       class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200"
                        placeholder="Kosongkan jika tidak ingin mengubah password">
             </div>
 
             <div class="flex justify-end">
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 px-6 rounded-xl shadow-lg shadow-indigo-600/25 transition duration-200">
+                <button type="submit" class="bg-[#1867c0] hover:bg-[#1355a1] text-white font-medium py-3.5 px-8 sm:py-4 sm:px-10 rounded-md text-base sm:text-lg md:text-xl transition duration-200">
                     Simpan Perubahan
                 </button>
             </div>
@@ -162,13 +162,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 
     <!-- Danger Zone (DELETE) -->
-    <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6 sm:p-8 shadow-xl">
-        <h3 class="text-lg font-semibold text-red-400 mb-2">Zona Bahaya (Hapus Akun)</h3>
-        <p class="text-xs text-slate-400 mb-6">Tindakan ini akan menghapus akun Dosen Anda secara permanen dari sistem beserta seluruh data terkait.</p>
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
+        <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-red-600 mb-3">Zona Bahaya (Hapus Akun)</h3>
+        <p class="text-sm sm:text-base md:text-lg text-red-500 mb-8">Tindakan ini akan menghapus akun Dosen Anda secara permanen dari sistem beserta seluruh data terkait.</p>
 
         <form method="POST" action="" onsubmit="return confirm('PERHATIAN: Apakah Anda benar-benar yakin ingin menghapus akun Anda secara permanen?');">
             <input type="hidden" name="action" value="delete_profile">
-            <button type="submit" class="bg-red-600 hover:bg-red-500 text-white font-medium py-2.5 px-5 rounded-xl text-xs shadow-lg shadow-red-600/25 transition duration-200">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 sm:py-3.5 sm:px-8 rounded-md text-sm sm:text-base md:text-lg transition duration-200">
                 Hapus Akun Permanen
             </button>
         </form>
