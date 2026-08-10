@@ -10,29 +10,34 @@ if (isset($_SESSION['user_id'])) {
 
 $error = '';
 
+//tangkap data form login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
 
+    //cek apakah NPM/NIDN dan password tidak kosong
     if (empty($username) || empty($password)) {
-        $error = 'Username dan password wajib diisi!';
+        $error = 'NPM / NIDN dan password wajib diisi!';
     } else {
         try {
+            //menampilkan data user dari database berdasarkan username (NPM/NIDN)
             $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
             $stmt->execute(['username' => $username]);
             $user = $stmt->fetch();
 
+            //verifikasi password
             if ($user && password_verify($password, $user['password'])) {
-                // Simpan data user_id, nama, dan role ke dalam $_SESSION
-                $_SESSION['user_id'] = $user['id_user'];
-                $_SESSION['nama']    = $user['username'];
-                $_SESSION['role']    = $user['role'];
+                // Simpan data ke dalam $_SESSION
+                $_SESSION['user_id']  = $user['id_user'];
+                $_SESSION['username'] = $user['username']; // berisi NPM atau NIDN
+                $_SESSION['nama']     = $user['nama'];     // berisi Nama penguna
+                $_SESSION['role']     = $user['role'];
 
                 // Direct ke dashboard utama yang bertindak sebagai dispatcher role
                 header("Location: ../../dashboard.php");
                 exit();
             } else {
-                $error = 'Username atau password salah!';
+                $error = 'NPM / NIDN atau password salah!';
             }
         } catch (PDOException $e) {
             $error = 'Terjadi kesalahan sistem: ' . $e->getMessage();
@@ -85,10 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <!-- Login Form -->
         <form method="POST" action="" class="space-y-5">
             <div>
-                <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">Username</label>
+                <label for="username" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">NPM / NIDN</label>
                 <input type="text" id="username" name="username" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required autofocus
                        class="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-200"
-                       placeholder="Masukkan username">
+                       placeholder="Masukkan NPM atau NIDN">
             </div>
 
             <div>
