@@ -55,7 +55,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <div class="flex items-center gap-4 md:gap-6">
                 <div class="hidden sm:block text-right">
                     <p class="text-sm md:text-lg font-semibold text-gray-800"><?= htmlspecialchars($_SESSION['nama'] ?? 'Dosen') ?></p>
-                    <p class="text-xs md:text-sm text-gray-500 font-mono">NIDN: <?= htmlspecialchars($_SESSION['username'] ?? '-') ?></p>
+                    <p class="text-xs md:text-sm text-gray-500 font-mono">NIDN: <?= htmlspecialchars($_SESSION['identity_number'] ?? '-') ?></p>
                 </div>
                 <a href="../auth/logout.php" class="px-4 py-2.5 rounded-md bg-red-50 border border-red-200 text-red-600 text-sm md:text-lg font-medium hover:bg-red-100 transition duration-200 flex items-center gap-2">
                     <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

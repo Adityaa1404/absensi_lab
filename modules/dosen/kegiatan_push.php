@@ -39,14 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $periode_selesai = trim($_POST['periode_selesai'] ?? '');
     $deskripsi_tugas = trim($_POST['deskripsi_tugas'] ?? '');
     $insentif        = trim($_POST['insentif'] ?? 0);
+    $kuota           = (int)($_POST['kuota'] ?? 0);
     $status          = trim($_POST['status'] ?? 'open');
 
     if (empty($nama_kegiatan) || empty($periode_mulai) || empty($periode_selesai) || empty($deskripsi_tugas)) {
         $error = 'Semua kolom bertanda * wajib diisi!';
     } else {
         if ($action === 'add') {
+            $status = 'open'; // Otomatis berstatus 'open' saat membuat kegiatan baru
             try {
-                $stmt = $pdo->prepare("INSERT INTO kegiatan (dosen_id, nama_kegiatan, periode_mulai, periode_selesai, deskripsi_tugas, insentif, status) VALUES (:dosen_id, :nama_kegiatan, :periode_mulai, :periode_selesai, :deskripsi_tugas, :insentif, :status)");
+                $stmt = $pdo->prepare("INSERT INTO kegiatan (dosen_id, nama_kegiatan, periode_mulai, periode_selesai, deskripsi_tugas, insentif, status, kuota) VALUES (:dosen_id, :nama_kegiatan, :periode_mulai, :periode_selesai, :deskripsi_tugas, :insentif, :status, :kuota)");
                 $stmt->execute([
                     'dosen_id'        => $_SESSION['user_id'],
                     'nama_kegiatan'   => $nama_kegiatan,
@@ -54,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     'periode_selesai' => $periode_selesai,
                     'deskripsi_tugas' => $deskripsi_tugas,
                     'insentif'        => $insentif,
-                    'status'          => $status
+                    'status'          => $status,
+                    'kuota'           => $kuota
                 ]);
                 $_SESSION['msg_success'] = 'Kegiatan berhasil dipublikasikan!';
                 header("Location: kegiatan_push.php");
@@ -65,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         } elseif ($action === 'edit') {
             $id_kegiatan = (int)($_POST['id_kegiatan'] ?? 0);
             try {
-                $stmt = $pdo->prepare("UPDATE kegiatan SET nama_kegiatan = :nama_kegiatan, periode_mulai = :periode_mulai, periode_selesai = :periode_selesai, deskripsi_tugas = :deskripsi_tugas, insentif = :insentif, status = :status WHERE id_kegiatan = :id AND dosen_id = :dosen_id");
+                $stmt = $pdo->prepare("UPDATE kegiatan SET nama_kegiatan = :nama_kegiatan, periode_mulai = :periode_mulai, periode_selesai = :periode_selesai, deskripsi_tugas = :deskripsi_tugas, insentif = :insentif, status = :status, kuota = :kuota WHERE id_kegiatan = :id AND dosen_id = :dosen_id");
                 $stmt->execute([
                     'nama_kegiatan'   => $nama_kegiatan,
                     'periode_mulai'   => $periode_mulai,
@@ -73,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     'deskripsi_tugas' => $deskripsi_tugas,
                     'insentif'        => $insentif,
                     'status'          => $status,
+                    'kuota'           => $kuota,
                     'id'              => $id_kegiatan,
                     'dosen_id'        => $_SESSION['user_id']
                 ]);
@@ -185,15 +189,25 @@ try {
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
 
-                <!-- Status -->
+                <!-- Kuota -->
                 <div>
-                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Status Kegiatan</label>
-                    <?php $selected_status = $edit_kegiatan['status'] ?? $_POST['status'] ?? 'open'; ?>
-                    <select name="status" class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
-                        <option value="open" <?= $selected_status === 'open' ? 'selected' : '' ?>>Open (Membuka Pendaftaran)</option>
-                        <option value="closed" <?= $selected_status === 'closed' ? 'selected' : '' ?>>Closed (Tutup)</option>
-                    </select>
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Kuota Asdos</label>
+                    <input type="number" name="kuota" min="1" placeholder="Misal: 3"
+                           value="<?= htmlspecialchars($edit_kegiatan['kuota'] ?? $_POST['kuota'] ?? '') ?>"
+                           class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
+
+                <!-- Status (Hanya ditampilkan saat mode edit) -->
+                <?php if ($edit_kegiatan): ?>
+                    <div>
+                        <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Status Kegiatan</label>
+                        <?php $selected_status = $edit_kegiatan['status'] ?? 'open'; ?>
+                        <select name="status" class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
+                            <option value="open" <?= $selected_status === 'open' ? 'selected' : '' ?>>Open (Membuka Pendaftaran)</option>
+                            <option value="closed" <?= $selected_status === 'closed' ? 'selected' : '' ?>>Closed (Tutup)</option>
+                        </select>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Deskripsi Tugas -->
                 <div class="md:col-span-2">
@@ -235,6 +249,7 @@ try {
                         <tr>
                             <th class="p-5">Nama Kegiatan</th>
                             <th class="p-5">Periode</th>
+                            <th class="p-5 text-center">Kuota</th>
                             <th class="p-5">Insentif</th>
                             <th class="p-5">Status</th>
                             <th class="p-5 text-center">Aksi</th>
@@ -249,6 +264,9 @@ try {
                                 </td>
                                 <td class="p-5 whitespace-nowrap text-sm sm:text-base md:text-lg text-gray-500">
                                     <?= date('d M Y', strtotime($row['periode_mulai'])) ?> - <?= date('d M Y', strtotime($row['periode_selesai'])) ?>
+                                </td>
+                                <td class="p-5 text-center whitespace-nowrap text-base sm:text-lg md:text-xl font-bold text-gray-700">
+                                    <?= htmlspecialchars($row['kuota'] ?? '-') ?> <span class="text-sm font-normal text-gray-500">Org</span>
                                 </td>
                                 <td class="p-5 whitespace-nowrap font-mono text-base sm:text-lg md:text-xl text-[#1867c0] font-semibold">
                                     Rp <?= is_numeric($row['insentif']) ? number_format($row['insentif'], 0, ',', '.') : htmlspecialchars($row['insentif']) ?>

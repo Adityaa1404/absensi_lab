@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Fetch Rekap Absensi
 try {
-    $sql = "SELECT a.*, k.nama_kegiatan, u.nama AS nama_asdos, u.username AS npm_asdos 
+    $sql = "SELECT a.*, k.nama_kegiatan, u.nama AS nama_asdos, u.identity_number AS npm_asdos 
             FROM absensi a 
             LEFT JOIN pendaftaran p ON a.pendaftaran_id = p.id_pendaftaran 
             LEFT JOIN kegiatan k ON p.kegiatan_id = k.id_kegiatan 
