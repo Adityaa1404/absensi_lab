@@ -42,11 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $kuota           = (int)($_POST['kuota'] ?? 0);
     $status          = trim($_POST['status'] ?? 'open');
 
+    // Jika kuota <= 0, status otomatis berubah menjadi closed
+    if ($kuota <= 0) {
+        $status = 'closed';
+    }
+
     if (empty($nama_kegiatan) || empty($periode_mulai) || empty($periode_selesai) || empty($deskripsi_tugas)) {
         $error = 'Semua kolom bertanda * wajib diisi!';
     } else {
         if ($action === 'add') {
-            $status = 'open'; // Otomatis berstatus 'open' saat membuat kegiatan baru
+            // Saat tambah baru: jika kuota > 0 maka open, jika kuota <= 0 maka closed
+            if ($kuota > 0) {
+                $status = 'open';
+            }
             try {
                 $stmt = $pdo->prepare("INSERT INTO kegiatan (dosen_id, nama_kegiatan, periode_mulai, periode_selesai, deskripsi_tugas, insentif, status, kuota) VALUES (:dosen_id, :nama_kegiatan, :periode_mulai, :periode_selesai, :deskripsi_tugas, :insentif, :status, :kuota)");
                 $stmt->execute([
@@ -191,8 +199,8 @@ try {
 
                 <!-- Kuota -->
                 <div>
-                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Kuota Asdos</label>
-                    <input type="number" name="kuota" min="1" placeholder="Misal: 3"
+                    <label class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Kuota Asdos <span class="text-xs font-normal text-gray-400 uppercase tracking-normal">(Jika &le; 0 otomatis Closed)</span></label>
+                    <input type="number" name="kuota" min="0" placeholder="Misal: 3"
                            value="<?= htmlspecialchars($edit_kegiatan['kuota'] ?? $_POST['kuota'] ?? '') ?>"
                            class="w-full bg-white border border-gray-300 rounded-md px-5 py-3.5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0] transition duration-200">
                 </div>
