@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password        = $_POST['password'] ?? '';
     $identity_number = trim($_POST['identity_number'] ?? '');
     $no_hp           = trim($_POST['no_hp'] ?? '');
+    $role            = trim($_POST['role'] ?? '');
     // Normalisasi nomor HP agar diawali dengan 08
     if (!empty($no_hp)) {
         if (strpos($no_hp, '+62') === 0) {
