@@ -1,13 +1,15 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Guard: hanya dosen yang bisa akses halaman yang menggunakan header ini
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'dosen') {
-    header("Location: ../auth/login.php");
+    header('Location: index.php?page=login');
     exit();
 }
 
-$current_page = basename($_SERVER['PHP_SELF']);
+// Tentukan halaman aktif untuk penanda navigasi (active state)
+$currentPage = basename($_SERVER['PHP_SELF']);
+// Karena semua halaman sekarang diakses melalui index.php,
+// kita baca dari parameter ?page= di URL
+$currentPageParam = $_GET['page'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -24,10 +26,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+
     <!-- Header / Navbar -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-20 md:h-24">
-            <!-- Brand / Logo -->   
+
+            <!-- Brand / Logo -->
             <div class="flex items-center gap-3 md:gap-4">
                 <div class="w-12 h-12 md:w-16 md:h-16 rounded-md bg-[#1867c0]/10 border border-[#1867c0]/20 flex items-center justify-center text-[#1867c0] font-bold text-lg md:text-2xl">
                     LAB
@@ -38,15 +42,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
 
-            <!-- Navigation Links -->
+            <!-- Navigation Links (Desktop) -->
             <nav class="hidden md:flex items-center gap-2">
-                <a href="kegiatan_push.php" class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $current_page === 'kegiatan_push.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                <a href="index.php?page=dosen/kegiatan"
+                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
                     Push Kegiatan
                 </a>
-                <a href="verifikasi.php" class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $current_page === 'verifikasi.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                <a href="index.php?page=dosen/verifikasi"
+                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
                     Verifikasi Absensi
                 </a>
-                <a href="profil.php" class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $current_page === 'profil.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                <a href="index.php?page=dosen/profil"
+                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
                     Profil
                 </a>
             </nav>
@@ -57,7 +64,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <p class="text-sm md:text-lg font-semibold text-gray-800"><?= htmlspecialchars($_SESSION['nama'] ?? 'Dosen') ?></p>
                     <p class="text-xs md:text-sm text-gray-500 font-mono">NIDN: <?= htmlspecialchars($_SESSION['identity_number'] ?? '-') ?></p>
                 </div>
-                <a href="../auth/logout.php" class="px-4 py-2.5 rounded-md bg-red-50 border border-red-200 text-red-600 text-sm md:text-lg font-medium hover:bg-red-100 transition duration-200 flex items-center gap-2">
+                <a href="index.php?page=logout"
+                   class="px-4 py-2.5 rounded-md bg-red-50 border border-red-200 text-red-600 text-sm md:text-lg font-medium hover:bg-red-100 transition duration-200 flex items-center gap-2">
                     <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
@@ -66,13 +74,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
+        <!-- Mobile Navigation -->
         <div class="md:hidden border-t border-gray-200 px-4 py-3 flex items-center justify-around bg-white">
-            <a href="kegiatan_push.php" class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $current_page === 'kegiatan_push.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Kegiatan</a>
-            <a href="verifikasi.php" class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $current_page === 'verifikasi.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Verifikasi</a>
-            <a href="profil.php" class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $current_page === 'profil.php' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Profil</a>
+            <a href="index.php?page=dosen/kegiatan"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Kegiatan</a>
+            <a href="index.php?page=dosen/verifikasi"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Verifikasi</a>
+            <a href="index.php?page=dosen/profil"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Profil</a>
         </div>
     </header>
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-6 sm:p-8 lg:p-12">
-

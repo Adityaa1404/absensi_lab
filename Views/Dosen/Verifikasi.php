@@ -1,55 +1,7 @@
-<?php
-require_once '../../includes/header_dosen.php';
-require_once '../../config/koneksi.php';
-
-$error = '';
-$success = '';
-
-// Handling Status Update & Pesan Dosen
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'verifikasi') {
-    $id_absensi        = (int)($_POST['id_absensi'] ?? 0);
-    $status_verifikasi = trim($_POST['status_verifikasi'] ?? '');
-    $pesan_dosen       = trim($_POST['pesan_dosen'] ?? '');
-
-    if (empty($id_absensi) || empty($status_verifikasi)) {
-        $error = 'Pilih status verifikasi!';
-    } else {
-        try {
-            $stmt = $pdo->prepare("UPDATE absensi SET status_verifikasi = :status, pesan_dosen = :pesan WHERE id_absensi = :id");
-            $stmt->execute([
-                'status' => $status_verifikasi,
-                'pesan'  => $pesan_dosen,
-                'id'     => $id_absensi
-            ]);
-            $success = 'Status verifikasi absensi berhasil diperbarui!';
-        } catch (PDOException $e) {
-            $error = 'Gagal memproses verifikasi: ' . $e->getMessage();
-        }
-    }
-}
-
-// Fetch Rekap Absensi
-try {
-    $sql = "SELECT a.*, k.nama_kegiatan, u.nama AS nama_asdos, u.identity_number AS npm_asdos 
-            FROM absensi a 
-            LEFT JOIN pendaftaran p ON a.pendaftaran_id = p.id_pendaftaran 
-            LEFT JOIN kegiatan k ON p.kegiatan_id = k.id_kegiatan 
-            LEFT JOIN users u ON p.asdos_id = u.id_user 
-            ORDER BY a.created_at DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $absensi_list = $stmt->fetchAll();
-} catch (PDOException $e) {
-    try {
-        $stmt = $pdo->query("SELECT * FROM absensi ORDER BY created_at DESC");
-        $absensi_list = $stmt->fetchAll();
-    } catch (PDOException $ex) {
-        $absensi_list = [];
-    }
-}
-?>
+<?php require_once __DIR__ . '/../Templates/HeaderDosen.php'; ?>
 
 <div class="space-y-8 md:space-y-12">
+
     <!-- Header Page -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white border border-gray-200 p-6 sm:p-8 md:p-10 rounded-lg shadow-sm">
         <div>
@@ -78,7 +30,7 @@ try {
     <?php endif; ?>
 
     <!-- List Laporan Absensi -->
-    <?php if (empty($absensi_list)): ?>
+    <?php if (empty($absensiList)): ?>
         <div class="bg-white border border-gray-200 rounded-lg p-12 sm:p-16 md:p-20 text-center text-gray-500 text-base sm:text-lg md:text-xl shadow-sm">
             <svg class="w-16 h-16 md:w-24 md:h-24 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -87,14 +39,15 @@ try {
         </div>
     <?php else: ?>
         <div class="grid grid-cols-1 gap-8 md:gap-10">
-            <?php foreach ($absensi_list as $row): ?>
+            <?php foreach ($absensiList as $row): ?>
                 <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm space-y-8">
+
                     <!-- Top Bar Info -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-6">
                         <div>
                             <span class="text-sm sm:text-base md:text-lg text-[#1867c0] font-semibold">Kegiatan: <?= htmlspecialchars($row['nama_kegiatan'] ?? 'Laporan Absensi') ?></span>
                             <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mt-1">
-                                Asdos: <?= htmlspecialchars($row['nama_asdos'] ?? 'Asdos') ?> 
+                                Asdos: <?= htmlspecialchars($row['nama_asdos'] ?? 'Asdos') ?>
                                 <?php if (!empty($row['npm_asdos'])): ?>
                                     <span class="text-sm sm:text-base md:text-lg font-mono text-gray-500 font-normal">(NPM: <?= htmlspecialchars($row['npm_asdos']) ?>)</span>
                                 <?php endif; ?>
@@ -104,12 +57,12 @@ try {
                         <div class="flex flex-wrap items-center gap-4">
                             <span class="text-sm sm:text-base md:text-lg text-gray-500">Tanggal: <strong class="text-gray-800"><?= date('d M Y', strtotime($row['tanggal'])) ?></strong></span>
                             <?php
-                            $status = strtolower($row['status_verifikasi'] ?? 'pending');
-                            $badge_class = 'bg-amber-50 text-amber-600 border-amber-200';
-                            if ($status === 'disetujui') $badge_class = 'bg-emerald-50 text-emerald-600 border-emerald-200';
-                            if ($status === 'ditolak')   $badge_class = 'bg-red-50 text-red-600 border-red-200';
+                            $statusVerif = strtolower($row['status_verifikasi'] ?? 'pending');
+                            $badgeClass  = 'bg-amber-50 text-amber-600 border-amber-200';
+                            if ($statusVerif === 'disetujui') $badgeClass = 'bg-emerald-50 text-emerald-600 border-emerald-200';
+                            if ($statusVerif === 'ditolak')   $badgeClass = 'bg-red-50 text-red-600 border-red-200';
                             ?>
-                            <span class="px-4 py-1.5 rounded-full text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider border <?= $badge_class ?>">
+                            <span class="px-4 py-1.5 rounded-full text-xs sm:text-sm md:text-base font-bold uppercase tracking-wider border <?= $badgeClass ?>">
                                 <?= htmlspecialchars($row['status_verifikasi'] ?? 'pending') ?>
                             </span>
                         </div>
@@ -117,7 +70,7 @@ try {
 
                     <!-- Content Grid: Detail + Gambar -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Detail Deskripsi Tugas -->
+                        <!-- Deskripsi Tugas -->
                         <div class="lg:col-span-1 space-y-4">
                             <h4 class="text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500">Deskripsi Pekerjaan:</h4>
                             <p class="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed bg-gray-50 p-5 md:p-6 rounded-md border border-gray-200">
@@ -132,17 +85,17 @@ try {
                             <?php endif; ?>
                         </div>
 
-                        <!-- Gambar Bukti Kegiatan & Selfie -->
+                        <!-- Foto Bukti -->
                         <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <!-- Foto Kegiatan -->
                             <div>
                                 <span class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Foto Kegiatan</span>
                                 <div class="aspect-video bg-gray-100 rounded-md overflow-hidden border border-gray-200 flex items-center justify-center relative group">
                                     <?php if (!empty($row['foto_kegiatan'])): ?>
-                                        <img src="../../uploads/<?= htmlspecialchars($row['foto_kegiatan']) ?>" 
-                                             alt="Foto Kegiatan" 
+                                        <img src="uploads/<?= htmlspecialchars($row['foto_kegiatan']) ?>"
+                                             alt="Foto Kegiatan"
                                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Kegiatan+Tidak+Ditemukan';">
+                                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Tidak+Ditemukan';">
                                     <?php else: ?>
                                         <span class="text-sm sm:text-base md:text-lg text-gray-400">Tidak ada foto</span>
                                     <?php endif; ?>
@@ -154,10 +107,10 @@ try {
                                 <span class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Foto Selfie / Presensi</span>
                                 <div class="aspect-video bg-gray-100 rounded-md overflow-hidden border border-gray-200 flex items-center justify-center relative group">
                                     <?php if (!empty($row['foto_selfie'])): ?>
-                                        <img src="../../uploads/<?= htmlspecialchars($row['foto_selfie']) ?>" 
-                                             alt="Foto Selfie" 
+                                        <img src="uploads/<?= htmlspecialchars($row['foto_selfie']) ?>"
+                                             alt="Foto Selfie"
                                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Selfie+Tidak+Ditemukan';">
+                                             onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Tidak+Ditemukan';">
                                     <?php else: ?>
                                         <span class="text-sm sm:text-base md:text-lg text-gray-400">Tidak ada foto</span>
                                     <?php endif; ?>
@@ -166,12 +119,12 @@ try {
                         </div>
                     </div>
 
-                    <!-- Form Update Verifikasi Dosen -->
-                    <form method="POST" action="" class="bg-gray-50 p-5 sm:p-6 md:p-8 rounded-md border border-gray-200 flex flex-col md:flex-row md:items-center gap-6">
+                    <!-- Form Verifikasi -->
+                    <form method="POST" action="index.php?page=dosen/verifikasi" class="bg-gray-50 p-5 sm:p-6 md:p-8 rounded-md border border-gray-200 flex flex-col md:flex-row md:items-center gap-6">
                         <input type="hidden" name="action" value="verifikasi">
                         <input type="hidden" name="id_absensi" value="<?= $row['id_absensi'] ?>">
 
-                        <!-- Radio Options Status -->
+                        <!-- Radio Status -->
                         <div class="flex items-center gap-6 shrink-0">
                             <label class="inline-flex items-center gap-3 cursor-pointer text-base sm:text-lg md:text-xl font-bold text-gray-700">
                                 <input type="radio" name="status_verifikasi" value="disetujui" <?= ($row['status_verifikasi'] ?? '') === 'disetujui' ? 'checked' : '' ?> class="w-5 h-5 text-emerald-600 focus:ring-emerald-500">
@@ -183,19 +136,21 @@ try {
                             </label>
                         </div>
 
-                        <!-- Pesan Dosen Input -->
-                        <input type="text" name="pesan_dosen" value="<?= htmlspecialchars($row['pesan_dosen'] ?? '') ?>" 
-                               placeholder="Beri Catatan / Pesan Dosen (Opsional)" 
+                        <!-- Pesan Dosen -->
+                        <input type="text" name="pesan_dosen" value="<?= htmlspecialchars($row['pesan_dosen'] ?? '') ?>"
+                               placeholder="Beri Catatan / Pesan Dosen (Opsional)"
                                class="flex-1 bg-white border border-gray-300 rounded-md px-5 py-3 md:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#1867c0]">
 
                         <button type="submit" class="px-8 py-3.5 md:py-4 rounded-md bg-[#1867c0] hover:bg-[#1355a1] text-white text-base sm:text-lg md:text-xl font-medium transition duration-200 shrink-0">
                             Simpan Verifikasi
                         </button>
                     </form>
+
                 </div>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
+
 </div>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../Templates/Footer.php'; ?>
