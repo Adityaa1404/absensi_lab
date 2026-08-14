@@ -1,125 +1,7 @@
-<?php
-require_once '../../includes/header_dosen.php';
-require_once '../../config/koneksi.php';
-
-$error = '';
-$success = '';
-
-// Fetch current user data
-try {
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id_user = :id LIMIT 1");
-    $stmt->execute(['id' => $_SESSION['user_id']]);
-    $user = $stmt->fetch();
-} catch (PDOException $e) {
-    $user = null;
-    $error = 'Gagal memuat data profil: ' . $e->getMessage();
-}
-
-// Handling Profile Update (EDIT)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_profile') {
-    $nama            = trim($_POST['nama'] ?? '');
-    $identity_number = trim($_POST['identity_number'] ?? ''); // NIDN
-    $email           = trim($_POST['email'] ?? '');
-    $no_hp           = trim($_POST['no_hp'] ?? '');
-
-    // Normalisasi nomor HP agar diawali dengan 08
-    if (!empty($no_hp)) {
-        if (strpos($no_hp, '+62') === 0) {
-            $no_hp = '0' . substr($no_hp, 3);
-        } elseif (strpos($no_hp, '62') === 0) {
-            $no_hp = '0' . substr($no_hp, 2);
-        }
-        $no_hp = preg_replace('/[^0-9]/', '', $no_hp);
-    }
-
-    if (empty($nama) || empty($identity_number)) {
-        $error = 'Nama dan NIDN tidak boleh kosong!';
-    } elseif (!empty($no_hp) && !preg_match('/^08[0-9]{8,11}$/', $no_hp)) {
-        $error = 'Nomor HP harus diawali dengan 08 dan terdiri dari 10-13 digit angka!';
-    } elseif (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Format alamat email tidak valid!';
-    } else {
-        try {
-            // Check NIDN/Username duplicate for other users
-            $stmt = $pdo->prepare("SELECT id_user FROM users WHERE identity_number = :identity_number AND id_user != :id");
-            $stmt->execute(['identity_number' => $identity_number, 'id' => $_SESSION['user_id']]);
-            if ($stmt->fetch()) {
-                $error = 'NIDN sudah digunakan oleh pengguna lain!';
-            } else {
-                $stmt = $pdo->prepare("UPDATE users SET nama = :nama, identity_number = :identity_number, email = :email, no_hp = :no_hp WHERE id_user = :id");
-                $stmt->execute([
-                    'nama'            => $nama,
-                    'identity_number' => $identity_number,
-                    'email'           => $email,
-                    'no_hp'           => $no_hp,
-                    'id'              => $_SESSION['user_id']
-                ]);
-
-                // Update Session
-                $_SESSION['nama']            = $nama;
-                $_SESSION['identity_number'] = $identity_number;
-                $_SESSION['email']           = $email;
-                $_SESSION['no_hp']           = $no_hp;
-                $success = 'Profil berhasil diperbarui!';
-
-                // Refresh user data
-                $user['nama']            = $nama;
-                $user['identity_number'] = $identity_number;
-                $user['email']           = $email;
-                $user['no_hp']           = $no_hp;
-            }
-        } catch (PDOException $e) {
-            $error = 'Terjadi kesalahan saat memperbarui profil: ' . $e->getMessage();
-        }
-    }
-}
-
-// Handling Change Password
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'change_password') {
-    $current_password = $_POST['current_password'] ?? '';
-    $new_password     = $_POST['new_password'] ?? '';
-    $confirm_password = $_POST['confirm_password'] ?? '';
-
-    if (empty($current_password) || empty($new_password) || empty($confirm_password)) {
-        $error = 'Semua kolom password wajib diisi!';
-    } elseif ($new_password !== $confirm_password) {
-        $error = 'Konfirmasi password baru tidak cocok!';
-    } elseif (strlen($new_password) < 6) {
-        $error = 'Password baru minimal 6 karakter!';
-    } else {
-        if (password_verify($current_password, $user['password'])) {
-            try {
-                $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("UPDATE users SET password = :password WHERE id_user = :id");
-                $stmt->execute(['password' => $password_hash, 'id' => $_SESSION['user_id']]);
-                $user['password'] = $password_hash;
-                $success = 'Password berhasil diubah!';
-            } catch (PDOException $e) {
-                $error = 'Gagal mengubah password: ' . $e->getMessage();
-            }
-        } else {
-            $error = 'Password saat ini tidak sesuai!';
-        }
-    }
-}
-
-// Handling Profile Delete (DELETE)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_profile') {
-    try {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE id_user = :id");
-        $stmt->execute(['id' => $_SESSION['user_id']]);
-
-        // Hancurkan session dan alihkan ke login
-        session_destroy();
-        header("Location: ../auth/login.php?deleted=1");
-        exit();
-    } catch (PDOException $e) {
-        $error = 'Gagal menghapus akun: ' . $e->getMessage();
-    }
-}
-?>
+<?php require_once __DIR__ . '/../Templates/HeaderDosen.php'; ?>
 
 <div class="max-w-4xl mx-auto space-y-8 md:space-y-12">
+
     <!-- Header Page -->
     <div class="bg-white border border-gray-200 p-6 sm:p-8 md:p-10 rounded-lg shadow-sm">
         <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Kelola Profil Dosen</h2>
@@ -160,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </div>
     </div>
 
-    <!-- Edit Profile Form (EDIT) -->
+    <!-- Edit Profile Form -->
     <div class="bg-white border border-gray-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
         <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
             <span class="w-3.5 h-3.5 rounded-full bg-[#1867c0]"></span>
             Edit Data Profil
         </h3>
 
-        <form method="POST" action="" class="space-y-8">
+        <form method="POST" action="index.php?page=dosen/profil" class="space-y-8">
             <input type="hidden" name="action" value="update_profile">
 
             <div>
@@ -218,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             Ganti Password
         </h3>
 
-        <form method="POST" action="" class="space-y-8">
+        <form method="POST" action="index.php?page=dosen/profil" class="space-y-8">
             <input type="hidden" name="action" value="change_password">
 
             <div>
@@ -252,18 +134,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </form>
     </div>
 
-    <!-- Danger Zone (DELETE) -->
+    <!-- Danger Zone -->
     <div class="bg-red-50 border border-red-200 rounded-lg p-6 sm:p-8 md:p-10 shadow-sm">
         <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-red-600 mb-3">Zona Bahaya (Hapus Akun)</h3>
         <p class="text-sm sm:text-base md:text-lg text-red-500 mb-8">Tindakan ini akan menghapus akun Dosen Anda secara permanen dari sistem beserta seluruh data terkait.</p>
 
-        <form method="POST" action="" onsubmit="return confirm('PERHATIAN: Apakah Anda benar-benar yakin ingin menghapus akun Anda secara permanen?');">
+        <form method="POST" action="index.php?page=dosen/profil" onsubmit="return confirm('PERHATIAN: Apakah Anda benar-benar yakin ingin menghapus akun Anda secara permanen?');">
             <input type="hidden" name="action" value="delete_profile">
             <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 sm:py-3.5 sm:px-8 rounded-md text-sm sm:text-base md:text-lg transition duration-200">
                 Hapus Akun Permanen
             </button>
         </form>
     </div>
+
 </div>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php require_once __DIR__ . '/../Templates/Footer.php'; ?>
