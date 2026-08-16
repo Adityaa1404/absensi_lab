@@ -80,6 +80,21 @@ switch ($page) {
         $controller->marketplace();
         break;
 
+    case 'asdos/dashboard':
+        $controller = new AsdosController();
+        $controller->dashboard();
+        break; 
+
+    case 'asdos/daftar':
+        $controller = new AsdosController();
+        $controller->daftar();
+        break;
+
+    case 'asdos/absensi':
+        $controller = new AsdosController();
+        $controller->absensi();
+        break;
+
     // --- 404 Fallback ---
     default:
         http_response_code(404);

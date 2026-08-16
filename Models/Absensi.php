@@ -36,19 +36,42 @@ class Absensi
         return $stmt->fetchAll();
     }
 
-    /**
-     * Memperbarui status verifikasi dan pesan dosen untuk satu record absensi.
-     */
+    public function getPendaftaranDiterima(int $pendaftaranId, int $asdosId): array|false{
+        $sql = "SELECT p.id_pendaftaran, p.status_pendaftaran, k.id_kegiatan, k.nama_kegiatan, k.periode_mulai, k.periode_selesai
+                FROM pendaftaran_kegiatan p
+                JOIN kegiatan k ON p.kegiatan_id = k.id_kegiatan
+                WHERE p.id_pendaftaran = :pendaftaran_id AND p.asdos_id = :asdosId AND p.status_pendaftaran = 'diterima'LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':pendaftaran_id' => $pendaftaranId,
+            ':asdosId' => $asdosId
+        ]);
+        return $stmt->fetch();
+    }
+
+    public function create(array $data): void
+    {
+        $sql = "INSERT INTO absensi (pendaftaran_id, tanggal, deskripsi_tugas, foto_kegiatan, status_verifikasi) 
+                VALUES (:pendaftaran_id, :tanggal, :deskripsi_tugas, :foto_kegiatan, 'pending')";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':pendaftaran_id'   => $data['pendaftaran_id'],
+            ':tanggal'  => $data['tanggal'],
+            ':deskripsi_tugas' => $data['deskripsi_tugas'],
+            ':foto_kegiatan'   => $data['foto_kegiatan']
+        ]);
+    }
+
     public function updateVerifikasi(int $id, string $status, string $pesanDosen): void
     {
         $sql = "UPDATE absensi 
-                SET status_verifikasi = :status, pesan_dosen = :pesan 
+                SET status_verifikasi = :status, pesan_dosen = :pesan
                 WHERE id_absensi = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':status' => $status,
-            ':pesan'  => $pesanDosen,
-            ':id'     => $id,
+            ':pesan_dosen' => $pesanDosen,
+            ':id' => $id
         ]);
     }
 }

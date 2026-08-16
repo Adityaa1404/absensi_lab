@@ -111,4 +111,24 @@ class Kegiatan
         $stmt = $this->db->query("SELECT * FROM kegiatan WHERE status = 'open' AND kuota > 0");
         return $stmt->fetchAll();
     }
+
+    /**
+     * Mengambil satu kegiatan yang masih terbuka berdasarkan ID.
+     */
+    public function findOpenById(int $id): array|false
+    {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM kegiatan
+            WHERE id_kegiatan = :id
+            AND status = 'open'
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $id
+        ]);
+
+        return $stmt->fetch();
+    }
 }
