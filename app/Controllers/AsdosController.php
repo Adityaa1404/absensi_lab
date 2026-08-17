@@ -60,11 +60,7 @@ class AsdosController
         $db = Database::getInstance()->getConnection();
         $kegiatanModel = new Kegiatan($db);
         $pendaftaranModel = new Pendaftaran($db);
-        $kegiatanId = filter_input(
-            INPUT_GET,
-            'id',
-            FILTER_VALIDATE_INT
-        );
+        $kegiatanId = (int) ($_GET['id'] ?? 0);
 
         if (!$kegiatanId) {
             header('Location: index.php?page=asdos/marketplace');
@@ -224,7 +220,7 @@ class AsdosController
         $asdosId = (int) $_SESSION['user_id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $pendaftaranId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+            $pendaftaranId = (int) ($_GET['id'] ?? 0);
             if (!$pendaftaranId) {
                 header('Location: index.php?page=asdos/dashboard');
                 exit();
@@ -241,7 +237,7 @@ class AsdosController
             return;
         }
 
-        $pendaftaranId = filter_input(INPUT_POST, 'pendaftaran_id', FILTER_VALIDATE_INT);
+        $pendaftaranId = (int) ($_POST['pendaftaran_id'] ?? 0);
         $tanggal = $_POST['tanggal'] ?? '';
         $deskripsiTugas = trim($_POST['deskripsi_tugas'] ?? '');
         if (!$pendaftaranId || !$tanggal || !$deskripsiTugas) {

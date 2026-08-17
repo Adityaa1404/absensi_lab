@@ -45,15 +45,19 @@ $currentPageParam = $_GET['page'] ?? '';
             <!-- Navigation Links (Desktop) -->
             <nav class="hidden md:flex items-center gap-2">
                 <a href="index.php?page=dosen/kegiatan"
-                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
-                    Push Kegiatan
+                   class="px-4 py-2.5 rounded-md text-sm md:text-lg font-medium transition duration-200 <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                    Kegiatan
+                </a>
+                <a href="index.php?page=dosen/seleksi"
+                   class="px-4 py-2.5 rounded-md text-sm md:text-lg font-medium transition duration-200 <?= $currentPageParam === 'dosen/seleksi' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                    Seleksi Pelamar
                 </a>
                 <a href="index.php?page=dosen/verifikasi"
-                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                   class="px-4 py-2.5 rounded-md text-sm md:text-lg font-medium transition duration-200 <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
                     Verifikasi Absensi
                 </a>
                 <a href="index.php?page=dosen/profil"
-                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                   class="px-4 py-2.5 rounded-md text-sm md:text-lg font-medium transition duration-200 <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
                     Profil
                 </a>
             </nav>
@@ -75,13 +79,15 @@ $currentPageParam = $_GET['page'] ?? '';
         </div>
 
         <!-- Mobile Navigation -->
-        <div class="md:hidden border-t border-gray-200 px-4 py-3 flex items-center justify-around bg-white">
+        <div class="md:hidden border-t border-gray-200 px-2 py-3 flex items-center justify-around bg-white text-xs sm:text-sm">
             <a href="index.php?page=dosen/kegiatan"
-               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Kegiatan</a>
+               class="px-3 py-1.5 rounded-md font-medium <?= $currentPageParam === 'dosen/kegiatan' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Kegiatan</a>
+            <a href="index.php?page=dosen/seleksi"
+               class="px-3 py-1.5 rounded-md font-medium <?= $currentPageParam === 'dosen/seleksi' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Seleksi</a>
             <a href="index.php?page=dosen/verifikasi"
-               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Verifikasi</a>
+               class="px-3 py-1.5 rounded-md font-medium <?= $currentPageParam === 'dosen/verifikasi' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Verifikasi</a>
             <a href="index.php?page=dosen/profil"
-               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Profil</a>
+               class="px-3 py-1.5 rounded-md font-medium <?= $currentPageParam === 'dosen/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Profil</a>
         </div>
     </header>
 

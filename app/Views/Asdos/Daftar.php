@@ -1,4 +1,10 @@
-<?php require_once __DIR__ . '/../Templates/HeaderAsdos.php'; ?>
+<?php 
+require_once __DIR__ . '/../Templates/HeaderAsdos.php'; 
+
+$messageType = $messageType ?? '';
+$message     = $message ?? '';
+$kegiatan    = $kegiatan ?? null;
+?>
 
 <!-- Header / Banner Title -->
 <div class="bg-white rounded-md border border-gray-200 p-6 sm:p-8 mb-6 shadow-sm">
@@ -53,7 +59,7 @@
             </div>
         </div>
 
-    <?php else: ?>
+    <?php elseif ($messageType === 'error'): ?>
 
         <div class="flex items-start gap-3 p-4 bg-red-50 border border-red-200 text-red-800 rounded-md text-sm md:text-base mb-6">
             <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

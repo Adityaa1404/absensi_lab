@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../core/Database.php';
 require_once __DIR__ . '/../Models/User.php';
 require_once __DIR__ . '/../Models/Kegiatan.php';
 require_once __DIR__ . '/../Models/Absensi.php';
+require_once __DIR__ . '/../Models/Pendaftaran.php';
 
 /**
  * Controller Dosen
@@ -11,20 +12,23 @@ require_once __DIR__ . '/../Models/Absensi.php';
  * Menangani seluruh fitur panel dosen:
  * - profil()      : CRUD profil & ganti password
  * - kegiatan()    : CRUD kegiatan lab
+ * - seleksi()     : Tinjau dan seleksi calon asisten dosen
  * - verifikasi()  : Verifikasi absensi asdos
  */
 class DosenController
 {
-    private User     $userModel;
-    private Kegiatan $kegiatanModel;
-    private Absensi  $absensiModel;
+    private User        $userModel;
+    private Kegiatan    $kegiatanModel;
+    private Absensi     $absensiModel;
+    private Pendaftaran $pendaftaranModel;
 
     public function __construct()
     {
-        $pdo                 = Database::getInstance()->getConnection();
-        $this->userModel     = new User($pdo);
-        $this->kegiatanModel = new Kegiatan($pdo);
-        $this->absensiModel  = new Absensi($pdo);
+        $pdo                  = Database::getInstance()->getConnection();
+        $this->userModel      = new User($pdo);
+        $this->kegiatanModel  = new Kegiatan($pdo);
+        $this->absensiModel   = new Absensi($pdo);
+        $this->pendaftaranModel = new Pendaftaran($pdo);
     }
 
     // =========================================================================
@@ -246,6 +250,54 @@ class DosenController
         $kegiatanList = $this->kegiatanModel->getByDosen($dosenId);
 
         require_once __DIR__ . '/../Views/Dosen/KegiatanPush.php';
+    }
+
+    // =========================================================================
+    // SELEKSI PELAMAR
+    // =========================================================================
+
+    public function seleksi(): void
+    {
+        $this->requireDosen();
+
+        $error    = '';
+        $success  = '';
+        $dosenId  = (int) $_SESSION['user_id'];
+
+        // Flash messages
+        if (isset($_SESSION['msg_success'])) { $success = $_SESSION['msg_success']; unset($_SESSION['msg_success']); }
+        if (isset($_SESSION['msg_error']))   { $error   = $_SESSION['msg_error'];   unset($_SESSION['msg_error']); }
+
+        // POST: Update status pendaftaran (Terima / Tolak)
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_status') {
+            $idPendaftaran = (int) ($_POST['id_pendaftaran'] ?? 0);
+            $status        = trim($_POST['status'] ?? '');
+            $catatanDosen  = trim($_POST['catatan_dosen'] ?? '');
+
+            if (empty($idPendaftaran) || !in_array($status, ['pending', 'diterima', 'ditolak'])) {
+                $_SESSION['msg_error'] = 'Data atau status seleksi tidak valid!';
+            } else {
+                try {
+                    $this->pendaftaranModel->updateStatus($idPendaftaran, $dosenId, $status, $catatanDosen);
+                    $_SESSION['msg_success'] = 'Status pelamar berhasil diperbarui menjadi ' . strtoupper($status) . '!';
+                } catch (PDOException $e) {
+                    $_SESSION['msg_error'] = 'Gagal memperbarui status seleksi: ' . $e->getMessage();
+                }
+            }
+            header('Location: index.php?page=dosen/seleksi' . (isset($_GET['kegiatan_id']) ? '&kegiatan_id=' . (int)$_GET['kegiatan_id'] : ''));
+            exit();
+        }
+
+        // GET: Filter kegiatan jika ada
+        $selectedKegiatanId = isset($_GET['kegiatan_id']) && (int)$_GET['kegiatan_id'] > 0 ? (int)$_GET['kegiatan_id'] : null;
+
+        // Ambil daftar kegiatan milik dosen untuk dropdown filter
+        $kegiatanList = $this->kegiatanModel->getByDosen($dosenId);
+
+        // Ambil data pelamar
+        $pelamarList = $this->pendaftaranModel->getByDosen($dosenId, $selectedKegiatanId);
+
+        require_once __DIR__ . '/../Views/Dosen/Seleksi.php';
     }
 
     // =========================================================================

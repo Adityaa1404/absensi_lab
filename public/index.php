@@ -69,6 +69,11 @@ switch ($page) {
         $controller->kegiatan();
         break;
 
+    case 'dosen/seleksi':
+        $controller = new DosenController();
+        $controller->seleksi();
+        break;
+
     case 'dosen/verifikasi':
         $controller = new DosenController();
         $controller->verifikasi();
