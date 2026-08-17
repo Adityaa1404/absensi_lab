@@ -69,24 +69,45 @@ switch ($page) {
         $controller->kegiatan();
         break;
 
+    case 'dosen/seleksi':
+        $controller = new DosenController();
+        $controller->seleksi();
+        break;
+
     case 'dosen/verifikasi':
         $controller = new DosenController();
         $controller->verifikasi();
         break;
 
     // --- Asdos ---
+    case 'asdos/dashboard':
+        $controller = new AsdosController();
+        $controller->dashboard();
+        break;
+
     case 'asdos/marketplace':
         $controller = new AsdosController();
         $controller->marketplace();
         break;
 
+    case 'asdos/daftar':
+        $controller = new AsdosController();
+        $controller->daftar();
+        break;
+
+    case 'asdos/absensi':
+        $controller = new AsdosController();
+        $controller->absensi();
+        break;
+
+    case 'asdos/profil':
+        $controller = new AsdosController();
+        $controller->profil();
+        break;
+
     // --- 404 Fallback ---
     default:
         http_response_code(404);
-        echo '<div style="font-family:sans-serif;text-align:center;padding:80px;">';
-        echo '<h1>404 - Halaman Tidak Ditemukan</h1>';
-        echo '<p>Halaman <strong>' . htmlspecialchars($page) . '</strong> tidak ada.</p>';
-        echo '<a href="index.php?page=login" style="color:#1867c0;">Kembali ke Login</a>';
-        echo '</div>';
+        echo '<!DOCTYPE html><html lang="id" class="h-full bg-slate-50"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>404 - Halaman Tidak Ditemukan</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>body{font-family:\'Inter\',sans-serif;}</style></head><body class="min-h-full flex items-center justify-center p-4"><div class="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-xs"><div class="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-lg">404</div><h1 class="text-xl font-bold text-slate-900 mb-1">Halaman Tidak Ditemukan</h1><p class="text-xs text-slate-500 mb-6">Halaman <code class="px-1.5 py-0.5 bg-slate-100 rounded text-slate-800 font-mono">' . htmlspecialchars($page) . '</code> tidak tersedia di sistem.</p><a href="index.php?page=login" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#1867c0] hover:bg-[#14529d] text-white text-xs font-semibold rounded-lg shadow-xs transition">Kembali ke Beranda</a></div></body></html>';
         break;
 }

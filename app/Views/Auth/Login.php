@@ -1,68 +1,87 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full bg-slate-50">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Absensi Lab</title>
+    <title>Login - Sistem Absensi Lab</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-10">
+<body class="min-h-full flex items-center justify-center p-4 sm:p-6 bg-slate-50 text-slate-800 antialiased">
 
     <!-- Login Card Container -->
-    <div class="w-full max-w-[560px] bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-8 sm:px-10 sm:py-12 md:px-14 md:py-16">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xs border border-slate-200 p-6 sm:p-8">
 
         <!-- Logo / Brand Header -->
-        <div class="text-center mb-10">
-            <h1 class="text-3xl sm:text-3xl md:text-4xl font-bold text-gray-800 tracking-tight">Sistem Absensi Asdos</h1>
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 rounded-xl bg-[#1867c0] text-white font-bold text-lg flex items-center justify-center mx-auto mb-3 shadow-xs">
+                LAB
+            </div>
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Sistem Absensi Lab</h1>
+            <p class="text-xs text-slate-500 mt-1">Masuk untuk mengelola kegiatan atau absensi asisten</p>
         </div>
 
         <!-- Success Notification -->
         <?php if (!empty($success)): ?>
-            <div class="mb-6 p-4 rounded bg-green-50 border border-green-200 text-green-700 text-base sm:text-lg">
-                <?= htmlspecialchars($success) ?>
+            <div class="mb-5 p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span><?= htmlspecialchars($success) ?></span>
             </div>
         <?php endif; ?>
 
         <!-- Error Notification -->
         <?php if (!empty($error)): ?>
-            <div class="mb-6 p-4 rounded bg-red-50 border border-red-200 text-red-600 text-base sm:text-lg">
-                <?= htmlspecialchars($error) ?>
+            <div class="mb-5 p-3.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm flex items-start gap-2.5">
+                <svg class="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span><?= htmlspecialchars($error) ?></span>
             </div>
         <?php endif; ?>
 
         <!-- Login Form -->
-        <form method="POST" action="index.php?page=login" class="space-y-6">
+        <form method="POST" action="index.php?page=login" class="space-y-4">
             <div>
+                <label for="identity_number" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                    NPM / NIDN <span class="text-red-500">*</span>
+                </label>
                 <input type="text" id="identity_number" name="identity_number" required autofocus
-                    class="w-full bg-white border border-gray-300 rounded-md px-4 py-3.5 sm:px-5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0056b3] focus:ring-2 focus:ring-[#0056b3]"
-                    placeholder="NPM/NIDN">
+                    class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0]/20 transition duration-150"
+                    placeholder="Masukkan NPM (Asdos) atau NIDN (Dosen)">
             </div>
 
             <div>
+                <label for="password" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Password <span class="text-red-500">*</span>
+                </label>
                 <input type="password" id="password" name="password" required
-                    class="w-full bg-white border border-gray-300 rounded-md px-4 py-3.5 sm:px-5 sm:py-4 text-base sm:text-lg md:text-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#0056b3] focus:ring-2 focus:ring-[#0056b3]"
-                    placeholder="Password">
+                    class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#1867c0] focus:ring-2 focus:ring-[#1867c0]/20 transition duration-150"
+                    placeholder="Masukkan password akun Anda">
             </div>
 
             <button type="submit"
-                class="bg-[#1867c0] hover:bg-[#1355a1] active:bg-[#0f4482] text-white font-medium py-3 px-8 sm:py-3.5 sm:px-10 text-base sm:text-lg md:text-xl rounded-md transition duration-200 mt-2">
-                Log in
+                class="w-full bg-[#1867c0] hover:bg-[#14529d] active:bg-[#0f4482] text-white font-semibold py-2.5 px-4 text-sm rounded-lg transition duration-150 shadow-xs mt-2 flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                <span>Masuk Sekarang</span>
             </button>
         </form>
 
-        <div class="mt-6">
-            <a href="index.php?page=register" class="text-base sm:text-lg text-[#1867c0] hover:underline font-medium">Belum punya akun? Daftar disini</a>
-        </div>
-        <div class="mt-6">
-            <a href="#" class="text-base sm:text-lg text-[#1867c0] hover:underline font-medium">Lupa Password?</a>
+        <div class="mt-6 pt-5 border-t border-slate-100 text-center space-y-2">
+            <p class="text-xs text-slate-600">
+                Belum memiliki akun?
+                <a href="index.php?page=register" class="text-[#1867c0] font-semibold hover:underline">Daftar di sini</a>
+            </p>
         </div>
 
     </div>
