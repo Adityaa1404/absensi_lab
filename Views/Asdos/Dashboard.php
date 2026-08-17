@@ -154,8 +154,48 @@ if (!empty($pendaftaran)) {
                             <p class="text-xs md:text-sm text-gray-600 mt-3">
                                 <?= $statusMessage ?>
                             </p>
+                            <?php if ($status === 'diterima' && !empty($item['absensi'])): ?>
+                            <div class="mt-4 space-y-2">
+                                <?php foreach ($item['absensi'] as $absensi): ?>
+                                    <?php
+                                    $statusAbsensi = $absensi['status_verifikasi'] ?? 'pending';
+                                    if ($statusAbsensi === 'pending') {
+                                        $absensiLabel = 'ABSENSI PENDING';
+                                        $absensiClass = 'bg-amber-50 text-amber-700 border-amber-200';
+                                        $absensiMessage = 'Absensi sedang menunggu verifikasi dosen.';
+                                    } elseif ($statusAbsensi === 'disetujui') {
+                                        $absensiLabel = 'ABSENSI DISETUJUI';
+                                        $absensiClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                                        $absensiMessage = 'Absensi kamu telah disetujui dosen.';
+                                    } else {
+                                        $absensiLabel = 'ABSENSI DITOLAK';
+                                        $absensiClass = 'bg-red-50 text-red-700 border-red-200';
+                                        $absensiMessage = 'Absensi kamu ditolak. Silakan periksa catatan dosen.';
+                                    }
+                                    ?>
+                                    <div class="p-3 rounded-md border <?= $absensiClass ?>">
+                                        <div class="flex items-center justify-between gap-3">
+                                            <span class="text-xs font-bold">
+                                                <?= $absensiLabel ?>
+                                            </span>
+                                            <span class="text-xs">
+                                                <?= date('d M Y', strtotime($absensi['tanggal'])) ?>
+                                            </span>
+                                        </div>
+                                        <p class="text-xs mt-1">
+                                            <?= $absensiMessage ?>
+                                        </p>
+                                        <?php if (!empty($absensi['pesan_dosen'])): ?>
+                                            <p class="text-xs mt-2">
+                                                <strong>Catatan dosen:</strong>
+                                                <?= htmlspecialchars($absensi['pesan_dosen']) ?>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>  
+                        <?php endif; ?>
                         </div>
-
                         <div class="shrink-0 pt-2 md:pt-0">
                             <?php if ($status === 'diterima'): ?>
                                 <a

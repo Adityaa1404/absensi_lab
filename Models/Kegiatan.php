@@ -131,4 +131,15 @@ class Kegiatan
 
         return $stmt->fetch();
     }
+
+    public function getMarketplaceByAsdos(int $asdosId): array
+    {
+        $sql = "SELECT  k.*, p.id_pendaftaran, p.status_pendaftaran FROM kegiatan k LEFT JOIN pendaftaran_kegiatan p ON k.id_kegiatan = p.kegiatan_id AND p.asdos_id = :asdos_id WHERE k.status = 'open' AND k.kuota > 0 AND p.id_pendaftaran IS NULL ORDER BY k.created_at DESC ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':asdos_id' => $asdosId
+        ]);
+
+        return $stmt->fetchAll();
+    }
 }

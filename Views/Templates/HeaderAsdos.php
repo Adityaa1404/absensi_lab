@@ -85,6 +85,10 @@ $currentPageParam = $_GET['page'] ?? '';
                class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/marketplace' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">
                Marketplace
             </a>
+            <a href="index.php?page=asdos/profil"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">
+               Profil
+            </a>
         </div>
     </header>
 

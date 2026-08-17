@@ -92,7 +92,7 @@
                                 <span class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Foto Kegiatan</span>
                                 <div class="aspect-video bg-gray-100 rounded-md overflow-hidden border border-gray-200 flex items-center justify-center relative group">
                                     <?php if (!empty($row['foto_kegiatan'])): ?>
-                                        <img src="uploads/<?= htmlspecialchars($row['foto_kegiatan']) ?>"
+                                        <img src="<?= htmlspecialchars($row['foto_kegiatan']) ?>"
                                              alt="Foto Kegiatan"
                                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                              onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Tidak+Ditemukan';">
@@ -107,7 +107,7 @@
                                 <span class="block text-sm sm:text-base md:text-lg font-bold uppercase tracking-wider text-gray-500 mb-3">Foto Selfie / Presensi</span>
                                 <div class="aspect-video bg-gray-100 rounded-md overflow-hidden border border-gray-200 flex items-center justify-center relative group">
                                     <?php if (!empty($row['foto_selfie'])): ?>
-                                        <img src="uploads/<?= htmlspecialchars($row['foto_selfie']) ?>"
+                                        <img src="<?= htmlspecialchars($row['foto_selfie']) ?>"
                                              alt="Foto Selfie"
                                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                                              onerror="this.onerror=null; this.src='https://placehold.co/600x400/f3f4f6/9ca3af?text=Foto+Tidak+Ditemukan';">

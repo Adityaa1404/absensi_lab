@@ -95,6 +95,11 @@ switch ($page) {
         $controller->absensi();
         break;
 
+    case 'asdos/profil':
+        $controller = new AsdosController();
+        $controller->profil();
+        break;
+
     // --- 404 Fallback ---
     default:
         http_response_code(404);

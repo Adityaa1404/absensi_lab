@@ -26,7 +26,8 @@ class AsdosController
         $this->requireAsdos();
         $db = Database::getInstance()->getConnection();
         $kegiatanModel = new Kegiatan($db);
-        $kegiatan = $kegiatanModel->getAllOpen();
+        $asdosId = (int) $_SESSION['user_id'];
+        $kegiatanList = $kegiatanModel->getMarketplaceByAsdos($asdosId);
         require_once __DIR__ . '/../Views/Asdos/Marketplace.php';
     }
 
@@ -35,11 +36,18 @@ class AsdosController
         $this->requireAsdos();
         $db = Database::getInstance()->getConnection();
         $pendaftaranModel = new Pendaftaran($db);
+        $absensiModel = new Absensi($db);
         $asdosId = (int) $_SESSION['user_id'];
-        $pendaftaran = $pendaftaranModel->getByAsdos((int) $_SESSION['user_id']);
+        $pendaftaran = $pendaftaranModel->getByAsdos($asdosId);
+        foreach ($pendaftaran as &$item) {
+            $item['absensi'] = $absensiModel->getByPendaftaran(
+                (int) $item['id_pendaftaran']
+            );
+        }
+        unset($item);
+
         require_once __DIR__ . '/../Views/Asdos/Dashboard.php';
     }
-
     public function daftar(): void
     {
         $this ->requireAsdos();
@@ -115,6 +123,106 @@ class AsdosController
         require_once __DIR__ . '/../Views/Asdos/Daftar.php';
     }
 
+    public function profil(): void
+    {
+        $this->requireAsdos();
+        $db = Database::getInstance()->getConnection();
+        $userModel = new User($db);
+        $userId = (int) $_SESSION['user_id'];
+        $user = $userModel->findById($userId);
+        if (!$user) {
+            session_destroy();
+            header('Location: index.php?page=login');
+            exit();
+        }
+        $error = '';
+        $success = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $action = $_POST['action'] ?? '';
+            if ($action === 'update_profile') {
+                $nama = trim($_POST['nama'] ?? '');
+                $identityNumber = trim($_POST['identity_number'] ?? '');
+                $email = trim($_POST['email'] ?? '');
+                $noHp = trim($_POST['no_hp'] ?? '');
+
+                if ($nama === '' || $identityNumber === '' || $email === '') {
+                    $error = 'Nama, NIM/NPM, dan email wajib diisi.';
+                } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $error = 'Format email tidak valid.';
+                } elseif ($userModel->isIdentityTaken($identityNumber, $userId)) {
+                    $error = 'NIM/NPM tersebut sudah digunakan oleh pengguna lain.';
+                } else {
+
+                    try {
+                        $userModel->update($userId, [
+                            'nama' => $nama,
+                            'identity_number' => $identityNumber,
+                            'email' => $email,
+                            'no_hp' => $noHp,
+                        ]);
+
+                        $_SESSION['nama'] = $nama;
+                        $_SESSION['identity_number'] = $identityNumber;
+                        $user = $userModel->findById($userId);
+                        $success = 'Profil berhasil diperbarui.';
+                    } catch (PDOException $e) {
+                        $error = 'Gagal memperbarui profil: ' . $e->getMessage();
+                    }
+                }
+            }
+
+            elseif ($action === 'change_password') {
+                $currentPassword = $_POST['current_password'] ?? '';
+                $newPassword = $_POST['new_password'] ?? '';
+                $confirmPassword = $_POST['confirm_password'] ?? '';
+
+                if (
+                    $currentPassword === '' ||
+                    $newPassword === '' ||
+                    $confirmPassword === ''
+                ) {
+                    $error = 'Semua kolom password wajib diisi.';
+                } elseif ($newPassword !== $confirmPassword) {
+                    $error = 'Konfirmasi password baru tidak cocok.';
+                } elseif (strlen($newPassword) < 6) {
+                    $error = 'Password baru minimal 6 karakter.';
+                } elseif (!password_verify($currentPassword, $user['password'])) {
+                    $error = 'Password saat ini tidak sesuai.';
+                } else {
+
+                    try {
+                        $hashedPassword = password_hash(
+                            $newPassword,
+                            PASSWORD_DEFAULT
+                        );
+                        $userModel->changePassword(
+                            $userId,
+                            $hashedPassword
+                        );
+                        $user['password'] = $hashedPassword;
+                        $success = 'Password berhasil diubah.';
+                    } catch (PDOException $e) {
+                        $error = 'Gagal mengubah password: ' . $e->getMessage();
+                    }
+                }
+            }
+            elseif ($action === 'delete_profile') {
+
+                try {
+                    $userModel->delete($userId);
+                    session_destroy();
+                    header('Location: index.php?page=login&message=deleted');
+                    exit();
+
+                } catch (PDOException $e) {
+                    $error = 'Gagal menghapus akun: ' . $e->getMessage();
+                }
+            }
+        }
+        require_once __DIR__ . '/../Views/Asdos/Profil.php';
+    }
+
     public function absensi(): void
     {
         $this->requireAsdos();
@@ -182,16 +290,24 @@ class AsdosController
             exit ('Terjadi kesalahan saat mengunggah file.');
         }
 
-        $allowedTypes = ['image/jpeg'=>'jpg', 'image/png'=>'png', 'image/webp'=>'webp'];
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($file['tmp_name']);
 
-        if (!isset($allowedTypes[$file['type']])) {
+        $allowedTypes = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp',
+        ];
+
+        if (!isset($allowedTypes[$mimeType])) {
             exit('Format file tidak didukung. Hanya JPG, PNG, dan WEBP yang diperbolehkan.');
         }
 
         if ($file['size'] > 5 * 1024 * 1024) {
             exit('Ukuran file terlalu besar. Maksimal 5MB.');
         }
-        $extension = $allowedTypes[$file['type']];
+
+        $extension = $allowedTypes[$mimeType];
         $uploadDir = __DIR__ . '/../uploads/absensi/';
 
         if (!is_dir($uploadDir)) {

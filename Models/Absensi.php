@@ -51,27 +51,72 @@ class Absensi
 
     public function create(array $data): void
     {
-        $sql = "INSERT INTO absensi (pendaftaran_id, tanggal, deskripsi_tugas, foto_kegiatan, status_verifikasi) 
-                VALUES (:pendaftaran_id, :tanggal, :deskripsi_tugas, :foto_kegiatan, 'pending')";
+        $sql = "INSERT INTO absensi 
+                    (pendaftaran_id, tanggal, deskripsi_tugas, foto_kegiatan, foto_selfie, status_verifikasi)
+                VALUES
+                    ( :pendaftaran_id, :tanggal, :deskripsi_tugas, :foto_kegiatan, :foto_selfie, 'pending' )";
+
         $stmt = $this->db->prepare($sql);
+
         $stmt->execute([
-            ':pendaftaran_id'   => $data['pendaftaran_id'],
-            ':tanggal'  => $data['tanggal'],
+            ':pendaftaran_id'  => $data['pendaftaran_id'],
+            ':tanggal'         => $data['tanggal'],
             ':deskripsi_tugas' => $data['deskripsi_tugas'],
-            ':foto_kegiatan'   => $data['foto_kegiatan']
+            ':foto_kegiatan'   => $data['foto_kegiatan'],
+            ':foto_selfie'     => $data['foto_selfie'],
         ]);
     }
 
     public function updateVerifikasi(int $id, string $status, string $pesanDosen): void
     {
-        $sql = "UPDATE absensi 
-                SET status_verifikasi = :status, pesan_dosen = :pesan
+        $sql = "UPDATE absensi
+                SET status_verifikasi = :status,
+                    pesan_dosen = :pesan
                 WHERE id_absensi = :id";
+
         $stmt = $this->db->prepare($sql);
+
         $stmt->execute([
             ':status' => $status,
-            ':pesan_dosen' => $pesanDosen,
-            ':id' => $id
+            ':pesan'  => $pesanDosen,
+            ':id'     => $id
         ]);
+    }
+
+    public function getByAsdos(int $asdosId): array
+    {
+        $sql = "SELECT
+                    a.*,
+                    k.nama_kegiatan
+                FROM absensi a
+                INNER JOIN pendaftaran_kegiatan p
+                    ON a.pendaftaran_id = p.id_pendaftaran
+                INNER JOIN kegiatan k
+                    ON p.kegiatan_id = k.id_kegiatan
+                WHERE p.asdos_id = :asdos_id
+                ORDER BY a.tanggal DESC, a.created_at DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':asdos_id' => $asdosId
+        ]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function getByPendaftaran(int $pendaftaranId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT *
+            FROM absensi
+            WHERE pendaftaran_id = :pendaftaran_id
+            ORDER BY created_at DESC"
+        );
+
+        $stmt->execute([
+            ':pendaftaran_id' => $pendaftaranId
+        ]);
+
+        return $stmt->fetchAll();
     }
 }
