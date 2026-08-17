@@ -21,9 +21,9 @@
 session_start();
 
 // Load semua Controller
-require_once __DIR__ . '/Controllers/AuthController.php';
-require_once __DIR__ . '/Controllers/DosenController.php';
-require_once __DIR__ . '/Controllers/AsdosController.php';
+require_once __DIR__ . '/../app/Controllers/AuthController.php';
+require_once __DIR__ . '/../app/Controllers/DosenController.php';
+require_once __DIR__ . '/../app/Controllers/AsdosController.php';
 
 // Baca parameter halaman dari URL, default ke 'login'
 $page = $_GET['page'] ?? 'login';
