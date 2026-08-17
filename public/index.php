@@ -75,9 +75,29 @@ switch ($page) {
         break;
 
     // --- Asdos ---
+    case 'asdos/dashboard':
+        $controller = new AsdosController();
+        $controller->dashboard();
+        break;
+
     case 'asdos/marketplace':
         $controller = new AsdosController();
         $controller->marketplace();
+        break;
+
+    case 'asdos/daftar':
+        $controller = new AsdosController();
+        $controller->daftar();
+        break;
+
+    case 'asdos/absensi':
+        $controller = new AsdosController();
+        $controller->absensi();
+        break;
+
+    case 'asdos/profil':
+        $controller = new AsdosController();
+        $controller->profil();
         break;
 
     // --- 404 Fallback ---

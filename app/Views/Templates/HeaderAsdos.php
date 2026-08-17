@@ -40,9 +40,31 @@ $currentPageParam = $_GET['page'] ?? '';
 
             <!-- Navigation Links (Desktop) -->
             <nav class="hidden md:flex items-center gap-2">
-                <a href="index.php?page=asdos/marketplace"
-                   class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'asdos/marketplace' ? 'bg-[#1867c0] text-white' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>">
+                <a
+                    href="index.php?page=asdos/dashboard"
+                    class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'asdos/dashboard'
+                        ? 'bg-[#1867c0] text-white'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>"
+                >
+                    Dashboard
+                </a>
+
+                <a
+                    href="index.php?page=asdos/marketplace"
+                    class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'asdos/marketplace'
+                        ? 'bg-[#1867c0] text-white'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>"
+                >
                     Marketplace
+                </a>
+
+                <a
+                    href="index.php?page=asdos/profil"
+                    class="px-5 py-3 rounded-md text-base md:text-xl font-medium transition duration-200 <?= $currentPageParam === 'asdos/profil'
+                        ? 'bg-[#1867c0] text-white'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' ?>"
+                >
+                    Profil
                 </a>
             </nav>
 
@@ -64,8 +86,18 @@ $currentPageParam = $_GET['page'] ?? '';
 
         <!-- Mobile Navigation -->
         <div class="md:hidden border-t border-gray-200 px-4 py-3 flex items-center justify-around bg-white">
+            <a href="index.php?page=asdos/dashboard"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/dashboard' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">
+               Dashboard
+            </a>
             <a href="index.php?page=asdos/marketplace"
-               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/marketplace' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">Marketplace</a>
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/marketplace' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">
+               Marketplace
+            </a>
+            <a href="index.php?page=asdos/profil"
+               class="px-4 py-2 rounded-md text-sm sm:text-base font-medium <?= $currentPageParam === 'asdos/profil' ? 'bg-[#1867c0] text-white' : 'text-gray-600' ?>">
+               Profil
+            </a>
         </div>
     </header>
 

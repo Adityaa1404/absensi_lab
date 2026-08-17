@@ -111,4 +111,43 @@ class Kegiatan
         $stmt = $this->db->query("SELECT * FROM kegiatan WHERE status = 'open' AND kuota > 0");
         return $stmt->fetchAll();
     }
+
+    /**
+     * Mengambil satu kegiatan yang masih terbuka berdasarkan ID.
+     */
+    public function findOpenById(int $id): array|false
+    {
+        $stmt = $this->db->prepare("
+            SELECT *
+            FROM kegiatan
+            WHERE id_kegiatan = :id
+            AND status = 'open'
+            LIMIT 1
+        ");
+
+        $stmt->execute([
+            'id' => $id
+        ]);
+
+        return $stmt->fetch();
+    }
+
+    /**
+     * Mengambil daftar kegiatan untuk marketplace yang belum pernah didaftari oleh asdos tertentu.
+     */
+    public function getMarketplaceByAsdos(int $asdosId): array
+    {
+        $sql = "SELECT k.*, p.id_pendaftaran, p.status_pendaftaran 
+                FROM kegiatan k 
+                LEFT JOIN pendaftaran_kegiatan p 
+                    ON k.id_kegiatan = p.kegiatan_id AND p.asdos_id = :asdos_id 
+                WHERE k.status = 'open' AND k.kuota > 0 AND p.id_pendaftaran IS NULL 
+                ORDER BY k.created_at DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            ':asdos_id' => $asdosId
+        ]);
+
+        return $stmt->fetchAll();
+    }
 }

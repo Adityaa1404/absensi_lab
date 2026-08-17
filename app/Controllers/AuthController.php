@@ -189,7 +189,7 @@ class AuthController
         if ($role === 'dosen') {
             header('Location: index.php?page=dosen/profil');
         } elseif ($role === 'asdos') {
-            header('Location: index.php?page=asdos/marketplace');
+            header('Location: index.php?page=asdos/dashboard');
         } else {
             header('Location: index.php?page=login');
         }
